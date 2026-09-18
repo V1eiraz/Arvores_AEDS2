@@ -19,15 +19,17 @@ private:
 
     void freeMemory(PatriciaNode* node);
     void printAux(PatriciaNode* node, std::string prefix, int level);
+    void generateDOTAux(PatriciaNode* node, std::ostream& out, int& nodeCount, int currentId);
 
 public:
     PatriciaTree();
     ~PatriciaTree();
 
     void insert(std::string key);
-    void search(std::string key);
-    void remove(std::string key); // Simplified or full removal
+    bool search(std::string key);
+    void remove(std::string key);
     void print();
+    void generateDOT(const std::string& filename);
 };
 
 #endif

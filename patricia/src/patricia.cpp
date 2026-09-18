@@ -1,4 +1,5 @@
 #include "patricia.hpp"
+#include <fstream>
 
 PatriciaTree::PatriciaTree() {
     root = new PatriciaNode("", false);
@@ -23,7 +24,6 @@ void PatriciaTree::insert(std::string key) {
         bool matchFound = false;
         for (PatriciaNode* child : current->children) {
             int j = 0;
-            // Find common prefix length
             while (j < (int)child->edgeLabel.length() && i + j < (int)key.length() && child->edgeLabel[j] == key[i + j]) {
                 j++;
             }
@@ -31,17 +31,15 @@ void PatriciaTree::insert(std::string key) {
             if (j > 0) {
                 matchFound = true;
                 if (j == (int)child->edgeLabel.length()) {
-                    // Fully matched child edge, continue down
                     current = child;
                     i += j;
                 } else {
-                    // Partial match, split the edge
                     std::string commonPrefix = child->edgeLabel.substr(0, j);
                     std::string remainingChildLabel = child->edgeLabel.substr(j);
                     std::string remainingKey = key.substr(i + j);
 
                     PatriciaNode* splitNode = new PatriciaNode(remainingChildLabel, child->isEndOfWord);
-                    splitNode->children = child->children; // move old children
+                    splitNode->children = child->children; 
 
                     child->edgeLabel = commonPrefix;
                     child->isEndOfWord = false;
@@ -60,17 +58,15 @@ void PatriciaTree::insert(std::string key) {
             }
         }
         if (!matchFound) {
-            // No matching child edge, add a new child
             PatriciaNode* newNode = new PatriciaNode(key.substr(i), true);
             current->children.push_back(newNode);
             return;
         }
     }
-    // If key is fully consumed
     current->isEndOfWord = true;
 }
 
-void PatriciaTree::search(std::string key) {
+bool PatriciaTree::search(std::string key) {
     PatriciaNode* current = root;
     int i = 0;
     while (i < (int)key.length()) {
@@ -87,28 +83,18 @@ void PatriciaTree::search(std::string key) {
                     matchFound = true;
                     break;
                 } else {
-                    // Mismatched before consuming full child edge
-                    std::cout << "Key " << key << " not found." << std::endl;
-                    return;
+                    return false;
                 }
             }
         }
         if (!matchFound) {
-            std::cout << "Key " << key << " not found." << std::endl;
-            return;
+            return false;
         }
     }
-    if (current->isEndOfWord) {
-        std::cout << "Key " << key << " found." << std::endl;
-    } else {
-        std::cout << "Key " << key << " not found." << std::endl;
-    }
+    return current->isEndOfWord;
 }
 
 void PatriciaTree::remove(std::string key) {
-    // Simplified removal for Patricia/Radix Tree
-    // To properly remove and compact, it requires more logic, 
-    // but setting isEndOfWord = false is a common simple approach.
     PatriciaNode* current = root;
     int i = 0;
     while (i < (int)key.length()) {
@@ -125,7 +111,7 @@ void PatriciaTree::remove(std::string key) {
                     matchFound = true;
                     break;
                 } else {
-                    return; // Not found
+                    return; 
                 }
             }
         }
@@ -133,7 +119,6 @@ void PatriciaTree::remove(std::string key) {
     }
     if (current->isEndOfWord) {
         current->isEndOfWord = false;
-        // Optional: compact the tree if this node has only 1 child and is not end of word.
         if (current->children.size() == 1) {
             PatriciaNode* child = current->children[0];
             current->edgeLabel += child->edgeLabel;
@@ -155,4 +140,34 @@ void PatriciaTree::printAux(PatriciaNode* node, std::string prefix, int level) {
 
 void PatriciaTree::print() {
     printAux(root, "", 0);
+}
+
+void PatriciaTree::generateDOTAux(PatriciaNode* node, std::ostream& out, int& nodeCount, int currentId) {
+    if (node->isEndOfWord && currentId != 0) {
+        out << "    node" << currentId << " [label=\"\", style=filled, fillcolor=lightgrey, shape=doublecircle];\n";
+    } else if (currentId != 0) {
+        out << "    node" << currentId << " [label=\"\", shape=circle];\n";
+    }
+
+    for (PatriciaNode* child : node->children) {
+        int childId = ++nodeCount;
+        out << "    node" << currentId << " -> node" << childId << " [label=\"" << child->edgeLabel << "\"];\n";
+        generateDOTAux(child, out, nodeCount, childId);
+    }
+}
+
+void PatriciaTree::generateDOT(const std::string& filename) {
+    std::ofstream out(filename);
+    if (out.is_open()) {
+        out << "digraph PatriciaTree {\n";
+        if (root == nullptr || root->children.empty()) {
+            out << "    empty [label=\"Empty\"];\n";
+        } else {
+            int nodeCount = 0;
+            out << "    node0 [label=\"root\", shape=rect];\n";
+            generateDOTAux(root, out, nodeCount, 0);
+        }
+        out << "}\n";
+        out.close();
+    }
 }

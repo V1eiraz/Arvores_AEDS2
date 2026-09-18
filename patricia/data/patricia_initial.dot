@@ -1,0 +1,13 @@
+digraph PatriciaTree {
+    node0 [label="root", shape=rect];
+    node0 -> node1 [label="ca"];
+    node1 [label="", shape=circle];
+    node1 -> node2 [label="r"];
+    node2 [label="", style=filled, fillcolor=lightgrey, shape=doublecircle];
+    node2 -> node3 [label="t"];
+    node3 [label="", style=filled, fillcolor=lightgrey, shape=doublecircle];
+    node1 -> node4 [label="t"];
+    node4 [label="", style=filled, fillcolor=lightgrey, shape=doublecircle];
+    node0 -> node5 [label="dog"];
+    node5 [label="", style=filled, fillcolor=lightgrey, shape=doublecircle];
+}
