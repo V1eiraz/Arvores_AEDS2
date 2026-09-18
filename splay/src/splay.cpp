@@ -1,4 +1,5 @@
 #include "splay.hpp"
+#include <fstream>
 
 SplayTree::SplayTree() {
     root = nullptr;
@@ -65,11 +66,7 @@ SplayNode* SplayTree::splay(SplayNode* root, int key) {
 
 void SplayTree::search(int key) {
     root = splay(root, key);
-    if (root != nullptr && root->key == key) {
-        std::cout << "Key " << key << " found." << std::endl;
-    } else {
-        std::cout << "Key " << key << " not found." << std::endl;
-    }
+    // Silent search for benchmarks
 }
 
 void SplayTree::insert(int key) {
@@ -125,4 +122,33 @@ void SplayTree::preOrderAux(SplayNode* root) {
 void SplayTree::preOrder() {
     preOrderAux(root);
     std::cout << std::endl;
+}
+
+void SplayTree::generateDOTAux(SplayNode* root, std::ostream& out) {
+    if (root != nullptr) {
+        if (root->left) {
+            out << "    " << root->key << " -> " << root->left->key << ";\n";
+            generateDOTAux(root->left, out);
+        }
+        if (root->right) {
+            out << "    " << root->key << " -> " << root->right->key << ";\n";
+            generateDOTAux(root->right, out);
+        }
+    }
+}
+
+void SplayTree::generateDOT(const std::string& filename) {
+    std::ofstream out(filename);
+    if (out.is_open()) {
+        out << "digraph SplayTree {\n";
+        if (root == nullptr) {
+            out << "    empty [label=\"Empty\"];\n";
+        } else if (root->left == nullptr && root->right == nullptr) {
+            out << "    " << root->key << ";\n";
+        } else {
+            generateDOTAux(root, out);
+        }
+        out << "}\n";
+        out.close();
+    }
 }
