@@ -1,0 +1,15 @@
+digraph Trie {
+    node0 [label="root", shape=rect];
+    node0 -> node1 [label="c"];
+    node1 [label="", shape=circle];
+    node1 -> node2 [label="a"];
+    node2 [label="", shape=circle];
+    node2 -> node3 [label="r"];
+    node3 [label="", style=filled, fillcolor=lightgrey, shape=doublecircle];
+    node0 -> node4 [label="d"];
+    node4 [label="", shape=circle];
+    node4 -> node5 [label="o"];
+    node5 [label="", shape=circle];
+    node5 -> node6 [label="g"];
+    node6 [label="", style=filled, fillcolor=lightgrey, shape=doublecircle];
+}

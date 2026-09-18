@@ -1,4 +1,5 @@
 #include "trie.hpp"
+#include <fstream>
 
 Trie::Trie()
 {
@@ -41,28 +42,23 @@ void Trie::Insert(std::string key)
     current->end = true;
 }
 
-void Trie::search(std::string key)
+bool Trie::search(std::string key)
 {
     TrieNode *current = root;
     for (size_t i = 0; i < key.length(); i++)
     {
         int index = key[i] - 'a';
         if (index < 0 || index >= Alphabet) {
-            std::cout << "Key " << key << " not found." << std::endl;
-            return;
+            return false;
         }
 
         if (current->sons[index] == nullptr)
         {
-            std::cout << "Key " << key << " not found." << std::endl;
-            return;
+            return false;
         }
         current = current->sons[index];
     }
-    if (current != nullptr && current->end)
-        std::cout << "Key " << key << " found." << std::endl;
-    else
-        std::cout << "Key " << key << " not found." << std::endl;
+    return (current != nullptr && current->end);
 }
 
 bool isEmpty(TrieNode* root)
@@ -105,8 +101,6 @@ TrieNode* removeAux(TrieNode* root, std::string key, int depth)
 void Trie::remove(std::string key)
 {
     root = removeAux(root, key, 0);
-    // Note: if the trie becomes completely empty, root might be nullptr, 
-    // we should recreate it to avoid crashes on next insert
     if (root == nullptr) {
         root = new TrieNode();
     }
@@ -127,3 +121,41 @@ void Trie::AuxPrint(TrieNode *node, std::string word)
     }
 }
 
+void Trie::generateDOTAux(TrieNode* node, std::string prefix, std::ostream& out, int& nodeCount) {
+    int currentId = nodeCount;
+    if (node->end) {
+        out << "    node" << currentId << " [label=\"\", style=filled, fillcolor=lightgrey, shape=doublecircle];\n";
+    } else {
+        out << "    node" << currentId << " [label=\"\", shape=circle];\n";
+    }
+
+    for (int i = 0; i < Alphabet; i++) {
+        if (node->sons[i]) {
+            int childId = ++nodeCount;
+            out << "    node" << currentId << " -> node" << childId << " [label=\"" << (char)(i + 'a') << "\"];\n";
+            generateDOTAux(node->sons[i], prefix + (char)(i + 'a'), out, nodeCount);
+        }
+    }
+}
+
+void Trie::generateDOT(const std::string& filename) {
+    std::ofstream out(filename);
+    if (out.is_open()) {
+        out << "digraph Trie {\n";
+        if (root == nullptr) {
+            out << "    empty [label=\"Empty\"];\n";
+        } else {
+            int nodeCount = 0;
+            out << "    node0 [label=\"root\", shape=rect];\n";
+            for (int i = 0; i < Alphabet; i++) {
+                if (root->sons[i]) {
+                    int childId = ++nodeCount;
+                    out << "    node0 -> node" << childId << " [label=\"" << (char)(i + 'a') << "\"];\n";
+                    generateDOTAux(root->sons[i], std::string(1, (char)(i + 'a')), out, nodeCount);
+                }
+            }
+        }
+        out << "}\n";
+        out.close();
+    }
+}
