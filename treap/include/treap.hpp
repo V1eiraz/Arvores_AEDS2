@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <string>
 
 struct TreapNode {
     int key;
@@ -24,6 +25,7 @@ private:
     TreapNode* searchAux(TreapNode* root, int key);
     void freeMemory(TreapNode* node);
     void inorderAux(TreapNode* root);
+    void generateDOTAux(TreapNode* root, std::ostream& out);
 
 public:
     Treap();
@@ -33,6 +35,7 @@ public:
     void remove(int key);
     void search(int key);
     void inorder();
+    void generateDOT(const std::string& filename);
 };
 
 #endif

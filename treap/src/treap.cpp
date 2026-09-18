@@ -1,4 +1,5 @@
 #include "treap.hpp"
+#include <fstream>
 
 Treap::Treap() {
     root = nullptr;
@@ -94,11 +95,7 @@ TreapNode* Treap::searchAux(TreapNode* root, int key) {
 }
 
 void Treap::search(int key) {
-    TreapNode* res = searchAux(root, key);
-    if (res)
-        std::cout << "Key " << key << " found with priority " << res->priority << std::endl;
-    else
-        std::cout << "Key " << key << " not found." << std::endl;
+    searchAux(root, key); // Silent search
 }
 
 void Treap::inorderAux(TreapNode* root) {
@@ -111,4 +108,32 @@ void Treap::inorderAux(TreapNode* root) {
 
 void Treap::inorder() {
     inorderAux(root);
+}
+
+void Treap::generateDOTAux(TreapNode* root, std::ostream& out) {
+    if (root != nullptr) {
+        out << "    " << root->key << " [label=\"" << root->key << "\\n(" << root->priority << ")\"];\n";
+        if (root->left) {
+            out << "    " << root->key << " -> " << root->left->key << ";\n";
+            generateDOTAux(root->left, out);
+        }
+        if (root->right) {
+            out << "    " << root->key << " -> " << root->right->key << ";\n";
+            generateDOTAux(root->right, out);
+        }
+    }
+}
+
+void Treap::generateDOT(const std::string& filename) {
+    std::ofstream out(filename);
+    if (out.is_open()) {
+        out << "digraph Treap {\n";
+        if (root == nullptr) {
+            out << "    empty [label=\"Empty\"];\n";
+        } else {
+            generateDOTAux(root, out);
+        }
+        out << "}\n";
+        out.close();
+    }
 }
