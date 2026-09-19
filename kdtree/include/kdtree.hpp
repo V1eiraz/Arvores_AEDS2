@@ -4,8 +4,9 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <string>
 
-const int K = 2; // Can be changed based on requirement
+const int K = 2;
 
 struct KDNode {
     std::vector<int> point;
@@ -27,6 +28,7 @@ private:
     void freeMemory(KDNode* node);
     bool arePointsSame(std::vector<int> p1, std::vector<int> p2);
     void inorderAux(KDNode* root);
+    void generateDOTAux(KDNode* root, std::ostream& out);
 
 public:
     KDTree();
@@ -36,6 +38,7 @@ public:
     void search(std::vector<int> point);
     void remove(std::vector<int> point);
     void inorder();
+    void generateDOT(const std::string& filename);
 };
 
 #endif

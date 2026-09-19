@@ -1,4 +1,6 @@
 #include "kdtree.hpp"
+#include <fstream>
+#include <sstream>
 
 KDTree::KDTree() {
     root = nullptr;
@@ -31,10 +33,7 @@ KDNode* KDTree::insertAux(KDNode* root, std::vector<int> point, unsigned depth) 
 }
 
 void KDTree::insert(std::vector<int> point) {
-    if (point.size() != K) {
-        std::cerr << "Error: Point dimension must be " << K << std::endl;
-        return;
-    }
+    if (point.size() != K) return;
     root = insertAux(root, point, 0);
 }
 
@@ -60,15 +59,7 @@ bool KDTree::searchAux(KDNode* root, std::vector<int> point, unsigned depth) {
 }
 
 void KDTree::search(std::vector<int> point) {
-    if (searchAux(root, point, 0)) {
-        std::cout << "Point (";
-        for (int i = 0; i < K; i++) std::cout << point[i] << (i == K - 1 ? "" : ", ");
-        std::cout << ") found." << std::endl;
-    } else {
-        std::cout << "Point (";
-        for (int i = 0; i < K; i++) std::cout << point[i] << (i == K - 1 ? "" : ", ");
-        std::cout << ") not found." << std::endl;
-    }
+    searchAux(root, point, 0); // Silent search
 }
 
 KDNode* KDTree::minNode(KDNode* x, KDNode* y, KDNode* z, unsigned d) {
@@ -145,4 +136,45 @@ void KDTree::inorderAux(KDNode* root) {
 
 void KDTree::inorder() {
     inorderAux(root);
+}
+
+void KDTree::generateDOTAux(KDNode* root, std::ostream& out) {
+    if (root != nullptr) {
+        std::stringstream ss;
+        ss << "(";
+        for (int i=0; i<K; i++) ss << root->point[i] << (i==K-1 ? "" : ",");
+        ss << ")";
+        std::string nodeName = "\"" + ss.str() + "\"";
+        
+        if (root->left) {
+            std::stringstream ssl;
+            ssl << "(";
+            for (int i=0; i<K; i++) ssl << root->left->point[i] << (i==K-1 ? "" : ",");
+            ssl << ")";
+            out << "    " << nodeName << " -> " << "\"" << ssl.str() << "\";\n";
+            generateDOTAux(root->left, out);
+        }
+        if (root->right) {
+            std::stringstream ssr;
+            ssr << "(";
+            for (int i=0; i<K; i++) ssr << root->right->point[i] << (i==K-1 ? "" : ",");
+            ssr << ")";
+            out << "    " << nodeName << " -> " << "\"" << ssr.str() << "\";\n";
+            generateDOTAux(root->right, out);
+        }
+    }
+}
+
+void KDTree::generateDOT(const std::string& filename) {
+    std::ofstream out(filename);
+    if (out.is_open()) {
+        out << "digraph KDTree {\n";
+        if (root == nullptr) {
+            out << "    empty [label=\"Empty\"];\n";
+        } else {
+            generateDOTAux(root, out);
+        }
+        out << "}\n";
+        out.close();
+    }
 }
