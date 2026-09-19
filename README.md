@@ -2,6 +2,8 @@
 
 Repositório contendo implementações, testes e análise de performance de cinco estruturas de dados hierárquicas avançadas não-convencionais. Desenvolvido como requisito de trabalho prático para a disciplina de Algoritmos e Estruturas de Dados II.
 
+**Autor:** Davi Enzo Vieira
+
 ## 🛠️ Tecnologias e Ferramentas
 * **Linguagem:** `C++` (padrão C++17)
 * **Compilador:** `g++` (GCC) versão 16+
