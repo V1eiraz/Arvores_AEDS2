@@ -2,6 +2,14 @@
 
 Repositório contendo implementações, testes e análise de performance de cinco estruturas de dados hierárquicas avançadas não-convencionais. Desenvolvido como requisito de trabalho prático para a disciplina de Algoritmos e Estruturas de Dados II.
 
+## 🛠️ Tecnologias e Ferramentas
+* **Linguagem:** `C++` (padrão C++17)
+* **Compilador:** `g++` (GCC) versão 16+
+* **Automação de Build:** `GNU Make`
+* **Geração Visual Topológica:** `Graphviz` (arquivos `.dot`)
+
+O projeto foi rigorosamente compilado em ambiente Linux utilizando as flags `-Wall -Wextra -Werror` para garantir que o código escrito estivesse limpo e totalmente livre de ressalvas de memória.
+
 ## 🌳 Árvores Implementadas
 O projeto isola cada estrutura em sua própria pasta, de modo encapsulado e modular, garantindo independência no `build`. Foram implementadas:
 
@@ -35,4 +43,4 @@ Resultados notáveis coletados no estudo ($N = 50.000$):
 Todas as estruturas implementam métodos internos `generateDOT()`. A cada ciclo de teste nos `mains`, são exportados rastreamentos estruturais nos diretórios `data/*.dot`. 
 Usando o formato de grafo DOT, foi possível plotar a topologia e estudar o comportamento do rebalanceamento em tempo real (como o fracionamento das strings na Patricia ou a conversão de eixos na KD-Tree).
 
-O relatório técnico completo (`.tex` e `.pdf` compilado) e todas as métricas tabuladas podem ser encontrados na pasta `relatorio/`.
+O relatório técnico completo (`.pdf` finalizado) contendo o arcabouço teórico e as métricas tabuladas pode ser encontrado na pasta `relatorio/`.
