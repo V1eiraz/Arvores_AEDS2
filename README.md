@@ -19,7 +19,7 @@ Cada estrutura conta com o seu próprio `Makefile`. Para compilar e rodar a suí
 cd splay/
 make clean
 make
-./build/app
+make run
 ```
 *(O mesmo comando vale para `trie`, `patricia`, `treap` e `kdtree`)*
 
